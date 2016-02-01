@@ -5,6 +5,11 @@ using System.IO;
 
 namespace Fractals
 {
+    // First run through to try and understand
+    // 0  - got into source control :-)
+    //   - read through notes http://23programs.blogspot.co.uk/2012/03/c-mandelbrot-set-fractal.html
+    //   - clicked link to wikipedia: https://en.wikipedia.org/wiki/Mandelbrot_set
+    //   -  hmm.. complex numbers, and maths.. unknown at the moment.. need good explanation in the code
     public partial class Form1 : Form
     {
         static double currentmaxr = 0;
@@ -19,11 +24,10 @@ namespace Fractals
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-            Bitmap img = MandelbrotSet(pictureBox1, 2, -2, 2, -2);
-            pictureBox1.Image = img;
+            Bitmap img = GetMandelbrotSetImage(pictureBox, 2, -2, 2, -2);
+            pictureBox.Image = img;
         }
-        static Bitmap MandelbrotSet(PictureBox pictureBox1, double maxr, double minr, double maxi, double mini)
+        static Bitmap GetMandelbrotSetImage(PictureBox pictureBox1, double maxr, double minr, double maxi, double mini)
         {
             currentmaxr = maxr;
             currentmaxi = maxi;
@@ -59,55 +63,43 @@ namespace Fractals
                         img.SetPixel(x, y, Color.FromArgb(loopgo % 128 * 2, loopgo % 32 * 7, loopgo % 16 * 14));
                     else
                         img.SetPixel(x, y, Color.Black);
-
                 }
             }
             return img;
         }
 
-
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
             int ex = e.X;
             int ey = e.Y;
-            double currentxjump = ((currentmaxr - currentminr) / Convert.ToDouble(pictureBox1.Width));
-            double currentyjump = ((currentmaxi  - currentmini) / Convert.ToDouble(pictureBox1.Height));
+            double currentxjump = ((currentmaxr - currentminr) / Convert.ToDouble(pictureBox.Width));
+            double currentyjump = ((currentmaxi - currentmini) / Convert.ToDouble(pictureBox.Height));
 
-            int zoomx = pictureBox1.Width/5 ;
-            int zoomy = pictureBox1.Height/5;
-            Bitmap img = MandelbrotSet(pictureBox1,((ex +zoomx) * currentxjump) -Math.Abs(currentminr) , ((ex-zoomx) * currentxjump) -Math.Abs(currentminr) , ((ey+zoomy ) * currentyjump) - Math.Abs(currentmini) , ((ey- zoomy) * currentyjump) - Math.Abs(currentmini));
-            pictureBox1.Image.Dispose();
-            pictureBox1.Image = img;
+            int zoomx = pictureBox.Width / 5;
+            int zoomy = pictureBox.Height / 5;
+            Bitmap img = GetMandelbrotSetImage(pictureBox, ((ex + zoomx) * currentxjump) - Math.Abs(currentminr), ((ex - zoomx) * currentxjump) - Math.Abs(currentminr), ((ey + zoomy) * currentyjump) - Math.Abs(currentmini), ((ey - zoomy) * currentyjump) - Math.Abs(currentmini));
+            pictureBox.Image.Dispose();
+            pictureBox.Image = img;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ResetButton_Click(object sender, EventArgs e)
         {
-           Bitmap img = MandelbrotSet(pictureBox1, 2, -2, 2, -2);
-            pictureBox1.Image.Dispose();
-            pictureBox1.Image = img;
+            Bitmap img = GetMandelbrotSetImage(pictureBox, 2, -2, 2, -2);
+            pictureBox.Image.Dispose();
+            pictureBox.Image = img;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void SaveButton_Click(object sender, EventArgs e)
         {
-            
             string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            //string folderf = @"\Fractals";
-            string filename = @"\Fractals";
-            string filetype = @".jpeg";
-            int mone=0;
-            
-            while (File.Exists(path + filename + mone.ToString() + filetype))
-            {
-                mone++;
-            }
-           
-            pictureBox1.Image.Save(path + filename + mone.ToString() + filetype);
+            var filename = @"\Fractals";
+            var filetype = @".jpg";
+            int i = 0;
+            while (File.Exists(path + filename + i + filetype)) i++;
+            pictureBox.Image.Save(path + filename + i + filetype);
             MessageBox.Show("Saved To Desktop");
-
-            
         }
     }
-
 }
 
 
